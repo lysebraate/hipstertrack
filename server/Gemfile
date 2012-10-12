@@ -1,0 +1,7 @@
+source :rubygems
+
+gem 'sinatra', '1.1.0'
+gem 'nokogiri'
+gem 'mongo'
+gem 'mongo_mapper'
+gem 'shotgun'
