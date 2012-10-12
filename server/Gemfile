@@ -1,6 +1,7 @@
 source :rubygems
-
-gem 'sinatra', '1.1.0'
+ruby '1.9.3'
+gem 'json' 
+gem 'sinatra'
 gem 'nokogiri'
 gem 'mongo'
 gem 'mongo_mapper'
