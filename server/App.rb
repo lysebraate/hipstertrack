@@ -32,6 +32,33 @@ end
 # create a new user 
 post '/user' do 
 	puts("creating user")
-	data = JSON.parse(params) 
+	
+	data = JSON.parse(request.body.read.to_s)  
+	
+
+	puts(data)
 end
+
+
+# get subscription for changes with doctor
+get '/subsription' do
+
+
+end
+
+
+# get all subscriptions for changes with doctor
+get '/subsription/all' do
+
+
+end
+
+
+# create subscription for changes with doctor
+post '/subsription' do
+
+
+end
+
+
 
