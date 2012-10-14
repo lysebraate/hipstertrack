@@ -1,5 +1,5 @@
 require 'sinatra'  
-require 'json'
+require 'active_support/core_ext'
 
 require_relative 'user'
 
@@ -9,7 +9,7 @@ end
 
 
 # get a known user 
-get '/user/:id' do  
+get '/users/:id' do  
 	 puts("getting user")
 
 	 User.new("123", "Tobias", "Torrissen", "tobiast@gmail.com", "98257822").to_json
@@ -17,20 +17,20 @@ end
 
 
 # get all users
-get '/user/all' do  
+get '/users' do  
 	 puts("getting users")
 	 User.new("123", "Tobias", "Torrissen", "tobiast@gmail.com", "98257822").to_json
 end  
 
 
 # update a known user
-put '/user/:id' do 
+put '/users/:id' do 
 	 puts("Updating user")
 
 end
 
 # create a new user 
-post '/user' do 
+post '/users' do 
 	puts("creating user")
 	
 	data = JSON.parse(request.body.read.to_s)  
@@ -41,21 +41,21 @@ end
 
 
 # get subscription for changes with doctor
-get '/subsription' do
+get '/subsriptions' do
 
 
 end
 
 
 # get all subscriptions for changes with doctor
-get '/subsription/all' do
+get '/subsriptions' do
 
 
 end
 
 
 # create subscription for changes with doctor
-post '/subsription' do
+post '/subsriptions' do
 
 
 end
