@@ -5,6 +5,6 @@ class User
   key :lastname, String 
   key :email, String 
   key :phonenumber, String 
-
- # many :subscriptions
+  
+  many :subscriptions
 end

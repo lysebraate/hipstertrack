@@ -1,5 +1,5 @@
 class Subscription
-        include MongoMapper::Document
+        include MongoMapper::EmbeddedDocument
         key :userid, String
         key :doctorid, String
 end

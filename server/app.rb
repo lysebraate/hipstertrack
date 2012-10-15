@@ -35,18 +35,18 @@ end
 # get all subscriptions for changes with doctor
 get '/users/:id/subscriptions' do
 	puts("get subscriptions for user with id " + params[:id])
-	subscriptions = Subscription.find_by_userid(params[:id])
-	subscriptions.to_json
+	user = User.find_by_id(params[:id])
+	user.subscriptions.to_json
 end
+
 
 # create subscription for changes with doctor
 post '/users/:id/subscriptions' do
 	puts("creating subscriptions for user with id " + params[:id])
+	user = User.find_by_id(params[:id])
 	subscriptionData = JSON.parse(request.body.read.to_s)  
-	puts(subscriptionData)
-	newsubscription = Subscription.new(subscriptionData)
-    newsubscription.userid = params[:id]
-  	newsubscription.save
+	user.subscriptions.build(subscriptionData)
+  	user.save
  end
 
 # get doctors in Oslo 
