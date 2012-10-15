@@ -37,7 +37,7 @@
     },
     render: function(){
       var that = this;
-      _.each(this.collection.models, function(user){
+      this.collection.each(function(user){
         that.$el.append("<li>" + user.get("firstname") + " " + user.get("lastname") + "</li>");
       });
     }
