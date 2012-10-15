@@ -4,24 +4,34 @@ require 'rubygems'
 require 'net/http'
 require 'json'
 
-require_relative 'fastlege'
+require_relative 'mongo_database'
+require_relative 'user'
+require_relative 'subscription'
 
 $base_url = "lit-bayou-7664.herokuapp.com"
 
 class FastlegeUpdateHelper
 
-	def self.check_updated
-		response = Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")	
-		
-		JSON.parse(response).each do |item|
-			fastlege = Fastlege::from_json item
-			puts fastlege.id
-		end
+	def self.add_test_user
+		newuser = User.new
+		newuser.firstname = "Test"
+		newuser.lastname = "Testesen"
+		newuser.email = "jhg@knowit.no"
 
-#		fastlege = Fastlege.new
-#		fastlege.from_json!(response)
-#		puts fastlege
+		subscription = Subscription.new
+		subscription.doctorid = 6
+
+		newuser.subscriptions << subscription
+		newuser.save
 	end
 
+	def self.check_updated
+		response = Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")
+		subscriptions = JSON.parse(Subscription.all)
 
+		JSON.parse(response).reduce([]) do |total, item|
+#			subscriptions.include?(item.id) : total << item ? total
+		end
+		puts total
+	end
 end

@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'mongo_mapper'
 
 class User
   include MongoMapper::Document
