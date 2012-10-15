@@ -26,12 +26,19 @@ class FastlegeUpdateHelper
 	end
 
 	def self.check_updated
-		response = Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")
-		subscriptions = JSON.parse(Subscription.all)
-
-		JSON.parse(response).reduce([]) do |total, item|
-#			subscriptions.include?(item.id) : total << item ? total
+		# Get the list of updated doctor_ids
+		doctor_ids = JSON.parse(Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")).map do |doctor|
+			doctor["id"]
 		end
-		puts total
+
+		# Make a list of users that has updated doctors
+		userlist = User.all.select do |user|
+			user.subscribed_to_ids?(doctor_ids) 
+		end
+		
+		# Simply print them out for now
+		puts "Lister ut brukere med oppdaterte fastleger..."
+		userlist.each { |user| puts user.describe }
 	end
+
 end
