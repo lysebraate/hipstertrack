@@ -1,4 +1,7 @@
 # encoding: utf-8
 
-class Subscription < Struct.new(:userid, :doctorid)
+class Subscription
+        include MongoMapper::EmbeddedDocument
+        key :userid, String
+        key :doctorid, String
 end

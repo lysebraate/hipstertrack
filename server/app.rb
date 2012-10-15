@@ -5,11 +5,8 @@ require 'active_support/core_ext'
 require 'mongo_mapper'
 
 require_relative 'user'
+require_relative 'subscription'
 require_relative 'mongo_database'
-
-get "/" do
-  File.read(File.join('../public', 'index.html'))
-end
 
 # get a known user 
 get '/users/:id' do  
@@ -28,21 +25,29 @@ end
 # create a new user 
 post '/users' do 
 	puts("creating user")
-
 	userdata = JSON.parse(request.body.read.to_s)  
-	mongouser = User.new(userdata) 
-  	mongouser.save
-
-	puts(userdata)
+	newuser = User.new(userdata) 
+  	newuser.save
 end
 
 # get all subscriptions for changes with doctor
-get '/subscriptions' do
-	puts("getting subscriptions")
+get '/users/:id/subscriptions' do
+	puts("get subscriptions for user with id " + params[:id])
+	user = User.find_by_id(params[:id])
+	user.subscriptions.to_json
 end
 
 # create subscription for changes with doctor
-post '/subscriptions' do
-	puts("creating subscriptions")
+post '/users/:id/subscriptions' do
+	puts("creating subscriptions for user with id " + params[:id])
+	user = User.find_by_id(params[:id])
+	subscriptionData = JSON.parse(request.body.read.to_s)  
+	user.subscriptions.build(subscriptionData)
+  	user.save
+ end
 
+# get doctors in Oslo 
+get '/doctors' do
+	[{ :id => '1234', :name => 'Dr.Dyrego', :kjonn => 'M', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'} , 
+	 { :id => '12345', :name => 'Dr.Dyrego', :kjonn => 'K', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'}].to_json
 end
