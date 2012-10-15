@@ -1,4 +1,4 @@
-source :rubygems
+source "https://rubygems.org"
 ruby '1.9.3'
 gem 'json' 
 gem 'sinatra'
@@ -8,3 +8,4 @@ gem 'mongo_mapper'
 gem 'shotgun'
 gem 'active_support'
 gem 'bson_ext'
+gem 'net-http'

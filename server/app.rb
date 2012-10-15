@@ -1,11 +1,11 @@
+# encoding: utf-8
+
 require 'sinatra'  
 require 'active_support/core_ext'
 require 'mongo_mapper'
 
-require_relative 'User'
-
-MongoMapper.connection = Mongo::Connection.new('localhost',27017, :pool_size => 5)
-MongoMapper.database = 'fastlege'
+require_relative 'user'
+require_relative 'mongo_database'
 
 get "/" do
   File.read(File.join('../public', 'index.html'))
@@ -37,12 +37,12 @@ post '/users' do
 end
 
 # get all subscriptions for changes with doctor
-get '/subsriptions' do
+get '/subscriptions' do
 	puts("getting subscriptions")
 end
 
 # create subscription for changes with doctor
-post '/subsriptions' do
+post '/subscriptions' do
 	puts("creating subscriptions")
 
 end
