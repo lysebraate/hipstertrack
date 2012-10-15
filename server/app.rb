@@ -51,5 +51,6 @@ post '/users/:id/subscriptions' do
 
 # get doctors in Oslo 
 get '/doctors' do
-	[{ :doctorid => '1234', :name => 'Dr.Dyrego' },{ :doctorid => '12345', :name => 'Dr.Shivago' },{ :doctorid => '12345', :name => 'Dr.No' }].to_json
+	[{ :id => '1234', :name => 'Dr.Dyrego', :kjonn => 'M', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'} , 
+	 { :id => '12345', :name => 'Dr.Dyrego', :kjonn => 'K', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'}].to_json
 end
