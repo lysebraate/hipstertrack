@@ -4,6 +4,11 @@
     url: "/users"
   });
 
+  var Users = Backbone.Collection.extend({
+    model: User,
+    url: "/users"
+  });
+
   var UserView = Backbone.View.extend({
     initialize: function(){
       this.render();
@@ -26,7 +31,23 @@
     }
   });
 
+  var UserListView = Backbone.View.extend({
+    initialize: function(){
+      this.render();
+    },
+    render: function(){
+      var that = this;
+      _.each(this.collection.models, function(user){
+        that.$el.append("<li>" + user.get("firstname") + " " + user.get("lastname") + "</li>");
+      });
+    }
+  });
+
   $(document).ready(function(){
     var userView = new UserView({el: $("#add_user")});
+    var users = new Users();
+    users.fetch({success: function(){
+      var userListView = new UserListView({el: $("#user_list"), collection: users});
+    }});
   });
 }());

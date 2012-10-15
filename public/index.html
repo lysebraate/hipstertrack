@@ -11,10 +11,11 @@
   <body>
     <h1>Hello</h1>
 
+    <ul id="user_list"></ul>
     <div id="add_user"></div>
 
     <script type="text/template" id="add_user_template">
-      <form action="#">
+      <form>
         <label for="firstname">Fornavn</label>
         <input type="text" id="firstname" />
         <label for="lastname">Etternavn</label>
@@ -25,6 +26,9 @@
         <input type="text" id="phonenumber" />
         <button type="submit">Legg til bruker</button>
       </form>
+    </script>
+    
+    <script type="text/template" id="users_template">
     </script>
   </body>
 </html>
