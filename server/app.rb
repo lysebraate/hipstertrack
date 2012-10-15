@@ -1,6 +1,7 @@
 require 'sinatra'  
 require 'active_support/core_ext'
 require 'mongo_mapper'
+require 'net/http'
 
 require_relative 'User'
 require_relative 'Subscription'
@@ -49,8 +50,8 @@ post '/users/:id/subscriptions' do
   	user.save
  end
 
-# get doctors in Oslo 
+# get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 get '/doctors' do
-	[{ :id => '1234', :name => 'Dr.Dyrego', :kjonn => 'M', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'} , 
-	 { :id => '12345', :name => 'Dr.Dyrego', :kjonn => 'K', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'}].to_json
+	$base_url = "lit-bayou-7664.herokuapp.com"
+	Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")
 end
