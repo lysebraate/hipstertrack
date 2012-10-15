@@ -43,6 +43,39 @@
     }
   });
 
+  var Lege = Backbone.Model.extend({    
+  });
+
+  var Leger = Backbone.Collection.extend({
+    model: Lege,
+    url: "/doctors"
+  });
+
+  var LegeView = Backbone.View.extend({
+    initialize: function(){
+      this.render();
+    },
+    render: function(){
+      var template = _.template($("#doctorlist_item_template").html());
+      this.$el.html(template(this.model.attributes));
+    }
+  });
+
+  var LegerView = Backbone.View.extend({
+    initialize: function() {
+      this.render();
+    },
+    render: function(){
+      var template = _.template($("#doctors_template").html());
+      this.$el.html(template);
+      var tableBody = $("tbody", this.$el);
+      this.collection.each(function(lege){
+        var legeView = new LegeView({model: lege});
+        tableBody.append(legeView.$el.html());
+    });  
+    }
+  });
+
   var LegeRouter = Backbone.Router.extend({
     routes: {
       "users": "showUsers",
@@ -57,7 +90,10 @@
       }});
     },
     showUser: function(userId){
-      console.log("Showing user id ... " + userId);
+      var leger = new Leger();
+      leger.fetch({success: function(){
+        var legerView = new LegerView({el: $("#leger"), collection: leger});
+      }});
     }
   });
 
