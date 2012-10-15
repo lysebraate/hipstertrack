@@ -51,6 +51,5 @@ post '/users/:id/subscriptions' do
 # get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 get '/doctors' do
 	$base_url = "lit-bayou-7664.herokuapp.com"
-	Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")
 	Net::HTTP.get($base_url, $kvinnerioslo_url)
 end
