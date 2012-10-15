@@ -31,7 +31,7 @@ end
 # create a new user 
 post '/users' do 
 	puts("creating user")
-	userdata = JSON.parse(request.body.read.to_s)  
+	userdata = JSON.parse(request.body.read)  
 	newuser = User.new(userdata) 
   	newuser.save
 end
