@@ -16,7 +16,7 @@ class FastlegeUpdateHelper
 		newuser = User.new
 		newuser.firstname = "Test"
 		newuser.lastname = "Testesen"
-		newuser.email = "jhg@knowit.no"
+		newuser.email = "test@test.no"
 
 		subscription = Subscription.new
 		subscription.doctorid = 6
