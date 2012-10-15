@@ -27,19 +27,16 @@ end
 # create a new user 
 post '/users' do 
 	puts("creating user")
-
 	userdata = JSON.parse(request.body.read.to_s)  
 	newuser = User.new(userdata) 
   	newuser.save
-
-	puts(userdata)
 end
 
 # get all subscriptions for changes with doctor
 get '/users/:id/subscriptions' do
 	puts("get subscriptions for user with id " + params[:id])
-
-	[{ :doctorid => '1234', :userid => '1234' },{ :doctorid => '12345', :userid => '12345' }].to_json
+	subscriptions = Subscription.find_by_userid(params[:id])
+	subscriptions.to_json
 end
 
 # create subscription for changes with doctor
