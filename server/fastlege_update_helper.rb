@@ -9,6 +9,7 @@ require_relative 'user'
 require_relative 'subscription'
 
 $base_url = "lit-bayou-7664.herokuapp.com"
+$kvinnerioslo_url = "/fastleger/kvinnerioslo"
 
 class FastlegeUpdateHelper
 
@@ -23,11 +24,22 @@ class FastlegeUpdateHelper
 
 		newuser.subscriptions << subscription
 		newuser.save
+
+		newuser = User.new
+		newuser.firstname = "Test2"
+		newuser.lastname = "Testesen2"
+		newuser.email = "test@test2.no"
+
+		subscription = Subscription.new
+		subscription.doctorid = 999999999
+
+		newuser.subscriptions << subscription
+		newuser.save
 	end
 
 	def self.check_updated
 		# Get the list of updated doctor_ids
-		doctor_ids = JSON.parse(Net::HTTP.get($base_url,"/fastleger/kvinnerioslo")).map do |doctor|
+		doctor_ids = JSON.parse(Net::HTTP.get($base_url, $kvinnerioslo_url)).map do |doctor|
 			doctor["id"]
 		end
 

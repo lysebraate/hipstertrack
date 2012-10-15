@@ -7,6 +7,7 @@ require 'mongo_mapper'
 require_relative 'user'
 require_relative 'subscription'
 require_relative 'mongo_database'
+require_relative 'fastlege_update_helper'
 
 # get a known user 
 get '/users/:id' do  
@@ -48,6 +49,5 @@ post '/users/:id/subscriptions' do
 
 # get doctors in Oslo 
 get '/doctors' do
-	[{ :id => '1234', :name => 'Dr.Dyrego', :kjonn => 'M', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'} , 
-	 { :id => '12345', :name => 'Dr.Dyrego', :kjonn => 'K', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'}].to_json
+	Net::HTTP.get($base_url, $kvinnerioslo_url)
 end
