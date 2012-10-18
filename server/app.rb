@@ -52,7 +52,7 @@ end
 post '/users/:id/subscriptions' do
 	puts("creating subscriptions for user with id " + params[:id])
 	user = User.find_by_id(params[:id])
-	subscriptionData = JSON.parse(request.body.read.to_s)  
+	subscriptionData = JSON.parse(request.body.read)  
 	user.subscriptions.build(subscriptionData)
   	user.save
  end
