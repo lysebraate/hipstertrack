@@ -1,9 +1,14 @@
+# encoding: utf-8
+
 require 'sinatra'  
 require 'active_support/core_ext'
 require 'mongo_mapper'
+require 'net/http'
 
-require_relative 'User'
-require_relative 'Subscription'
+require_relative 'user'
+require_relative 'subscription'
+require_relative 'mongo_database'
+require_relative 'fastlege_update_helper'
 
 
 MongoMapper.connection = Mongo::Connection.new('localhost',27017, :pool_size => 5)
@@ -43,7 +48,6 @@ get '/users/:id/subscriptions' do
 	user.subscriptions.to_json
 end
 
-
 # create subscription for changes with doctor
 post '/users/:id/subscriptions' do
 	puts("creating subscriptions for user with id " + params[:id])
@@ -53,8 +57,8 @@ post '/users/:id/subscriptions' do
   	user.save
  end
 
-# get doctors in Oslo 
+# get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 get '/doctors' do
-	[{ :id => '1234', :name => 'Dr.Dyrego', :kjonn => 'M', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'} , 
-	 { :id => '12345', :name => 'Dr.Dyrego', :kjonn => 'K', :praksisnavn => 'Dr.Dyrego klinikken', :tilgjengelig => 'J', :adresse => 'Adresse', :poststed => 'Dr.Dyrego', :ledig => 'N'}].to_json
+	$base_url = "lit-bayou-7664.herokuapp.com"
+	Net::HTTP.get($base_url, $kvinnerioslo_url)
 end

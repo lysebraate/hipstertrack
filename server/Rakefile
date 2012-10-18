@@ -1,0 +1,12 @@
+# encoding: utf-8
+
+require_relative 'fastlege_update_helper'
+
+desc "Sjekker for oppdaterte fastleger"
+task :cron do
+ 	FastlegeUpdateHelper.check_updated
+end
+
+task :newuser do
+ 	FastlegeUpdateHelper.add_test_user
+end

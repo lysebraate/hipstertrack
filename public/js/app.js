@@ -58,6 +58,14 @@
     render: function(){
       var template = _.template($("#doctorlist_item_template").html());
       this.$el.html(template(this.model.attributes));
+    },
+    events: {
+      "submit form": "toggleSubscribe"
+    },
+    toggleSubscribe: function(event){
+      alert("HAHAHA");
+      console.log("toggling subscribe");
+      return false;
     }
   });
 
