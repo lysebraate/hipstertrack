@@ -1,7 +1,7 @@
 (function() {
 
   var User = Backbone.Model.extend({
-    url: "/users"
+    urlRoot: "/users"
   });
 
   var Users = Backbone.Collection.extend({
@@ -10,6 +10,16 @@
   });
 
   var UserView = Backbone.View.extend({
+    initialize: function(){
+      this.render();
+    },
+    render: function(){
+      var template = _.template($("#user_template").html(), this.model.attributes);
+      this.$el.html(template); 
+    }
+  });
+
+  var AddUserView = Backbone.View.extend({
     initialize: function(){
       this.render();
     },
@@ -84,6 +94,15 @@
     }
   });
 
+  var Subscription = Backbone.Model.extend({});
+
+  var Subscriptions = Backbone.Collection.extend({
+    model: Subscription,
+    initialize: function(user){
+      this.url = "/users/" + user.userid + "/subscriptions"
+    }
+  });
+
   var LegeRouter = Backbone.Router.extend({
     routes: {
       "users": "showUsers",
@@ -91,7 +110,7 @@
     },
     
     showUsers: function(){
-      var userView = new UserView({el: $("#add_user")});
+      var userView = new AddUserView({el: $("#add_user")});
       var users = new Users();
       users.fetch({success: function(){
         var userListView = new UserListView({el: $("#user_list"), collection: users});
@@ -99,8 +118,14 @@
     },
     showUser: function(userId){
       var leger = new Leger();
-      leger.fetch({success: function(){
+/*      leger.fetch({success: function(){
         var legerView = new LegerView({el: $("#leger"), collection: leger});
+      }});*/
+
+      var newUser = new User({id: userId});
+      newUser.fetch({success: function(){
+        console.log(newUser);
+        var userView = new UserView({el: $("#user"), model: newUser});
       }});
     }
   });
@@ -109,5 +134,14 @@
     var legeRouter = new LegeRouter();
     Backbone.history.start();
     legeRouter.navigate('#users');
+
+    var subscriptions = new Subscriptions({userid:"507c70950240e6280f000001"});
+
+    subscriptions.fetch({success: function(){
+      console.log("Fetching shit...");
+    }});
+
+//    subscriptions.create({userid:"507c70950240e6280f000001",doctorid:"123456"});
+
   });
 }());

@@ -13,6 +13,7 @@
 
     <ul id="user_list"></ul>
     <div id="add_user"></div>
+    <div id="user"></div>
     <div id="leger"></div>
 
     <script type="text/template" id="add_user_template">
@@ -28,6 +29,14 @@
         <button type="submit">Legg til bruker</button>
       </form>
     </script>
+
+    <script type="text/template" id="user_template">
+      <h2>Brukerinfo</h2>
+      <div>Bruker id: <%= id %></div>
+      <div>Fornavn: <%= firstname %></div>
+      <div>Etternavn: <%= lastname %></div>
+      <div>Antall fulgte leger: <%= subscriptions.length %></div>
+    </script> 
 
     <script type="text/template" id="users_template">
     </script>

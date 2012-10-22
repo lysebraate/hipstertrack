@@ -4,6 +4,7 @@ require 'sinatra'
 require 'active_support/core_ext'
 require 'mongo_mapper'
 require 'net/http'
+require 'pp'
 
 require_relative 'user'
 require_relative 'subscription'
@@ -52,7 +53,9 @@ end
 post '/users/:id/subscriptions' do
 	puts("creating subscriptions for user with id " + params[:id])
 	user = User.find_by_id(params[:id])
+  puts user
 	subscriptionData = JSON.parse(request.body.read)  
+  puts subscriptionData
 	user.subscriptions.build(subscriptionData)
   	user.save
  end
