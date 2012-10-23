@@ -50,14 +50,24 @@ get '/users/:id/subscriptions' do
 end
 
 # create subscription for changes with doctor
-post '/users/:id/subscriptions' do
-	puts("creating subscriptions for user with id " + params[:id])
-	user = User.find_by_id(params[:id])
-  puts user
-	subscriptionData = JSON.parse(request.body.read)  
-  puts subscriptionData
-	user.subscriptions.build(subscriptionData)
-  	user.save
+post '/users/:userid/subscriptions/:doctorid' do
+  content_type :json
+  user_id = params[:userid]
+  doctor_id = params[:doctorid]
+	puts("creating subscriptions for user with id #{user_id} for doctor #{doctor_id}")
+	user = User.find_by_id(user_id)
+  user.subscribe(doctor_id)
+  user.save
+end
+
+delete '/users/:userid/subscriptions/:doctorid' do
+  content_type :json
+  user_id = params[:userid]
+  doctor_id = params[:doctorid]
+	puts("deleting subscriptions for user with id #{user_id} for doctor #{doctor_id}")
+  user = User.find_by_id(user_id)
+  user.unsubscribe(doctor_id)
+  user.save
 end
 
 # get doctors in Oslo. Remote call to fastlegetjeneste by JHG

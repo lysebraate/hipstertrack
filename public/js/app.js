@@ -99,12 +99,18 @@
     }
   });
 
-  var Subscription = Backbone.Model.extend({});
+  var Subscription = Backbone.Model.extend({
+    initialize: function(options){
+      this.url = "/users/" + options.userid + "/subscriptions/" + options.doctorid;
+      console.log("url", this.url);
+    },
+  });
 
   var Subscriptions = Backbone.Collection.extend({
     initialize: function(options){
-      this.url = "/users/" + options.userId + "/subscriptions";
-    },
+      this.url = "/users/" + options.userid + "/subscriptions";
+      console.log("url", this.url);
+     },
     model: Subscription
   });
 
@@ -146,13 +152,15 @@
       var template = _.template($("#doctors_template").html());
       this.$el.html(template);
       var tableBody = $("tbody", this.$el);
- 
-      that.subscriptions = new Subscriptions({userId: userId});
+
+      that.subscriptions = new Subscriptions({userid: userId});
       that.subscriptions.fetch({success: function(){
+        console.log(that.subscriptions);
         var followedDoctors = _.map(that.subscriptions.models, function(subscription) { return subscription.get("doctorid"); });
         that.collection.each(function(lege){
           var isFollowed = _.contains(followedDoctors, lege.id + "");
           var subscription = _.find(that.subscriptions.models, function(subscription) { return subscription.get("doctorid") === (lege.id + ""); });
+          console.log(subscription);
           lege.set({followed: isFollowed});
           lege.set({subscription: subscription});
           var tableRow = $("<tr>").appendTo(tableBody);
@@ -161,14 +169,20 @@
       }});
     },
     toggleSubscribe: function(event, data){
+      var that = this;
       var subscription = data.get("subscription");
-      console.log(_.contains(this.subscriptions, subscription));
       if(subscription === undefined){
-        console.log(this.subscriptions);
-        console.log("Create new,..");
+        var doctorId = data.get("id");
+        var newSubscription = new Subscription({userid: this.userId, doctorid: doctorId});
+        newSubscription.save();
       } else {
-        console.log("Delte subscription");
+        console.log(subscription);
+        subscription.destroy();
+        //this.subscriptions.remove(subscription);
       }
+      that.render(that.userId);
+
+      event.preventDefault();
     }
   });
 
@@ -184,6 +198,7 @@
 
     var userListView = new UserListView({el: $("#user_list"), router: legeRouter});
     var userView = new UserView({el: $("#user"), router: legeRouter});
+    var addUserView = new AddUserView({el: $("#add_user")});
 
     Backbone.history.start();
   });

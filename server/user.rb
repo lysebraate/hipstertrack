@@ -25,4 +25,14 @@ class User
   def describe
   	puts "#{firstname} #{lastname} <#{email}> #{phonenumber}"
   end
+
+  def unsubscribe doctor_id
+    subscriptions.delete_if{ |subscription| subscription.doctorid == doctor_id }
+  end
+    
+  def subscribe doctor_id
+    new_subscription = Subscription.new(:doctorid => doctor_id, :userid => self.id)
+    puts self.id
+    subscriptions.push(new_subscription)
+  end
 end
