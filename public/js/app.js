@@ -9,13 +9,43 @@
     url: "/users"
   });
 
+  var Lege = Backbone.Model.extend({    
+  });
+
+  var Leger = Backbone.Collection.extend({
+    model: Lege,
+    url: "/doctors"
+  });
+
   var UserView = Backbone.View.extend({
-    initialize: function(){
-      this.render();
+    initialize: function(options){
+      var that = this;
+	    options.router.on('route:showUser', function(userId) {
+        that.fetchUser(userId);
+	    });
+      options.router.on('route:showUsers', function(){
+        $(that.el).hide();
+      });
     },
     render: function(){
+      var that = this;
       var template = _.template($("#user_template").html(), this.model.attributes);
-      this.$el.html(template); 
+      this.$el.append(template);
+      var follows = $("#follows", this.$el);
+      var leger = new Leger();
+      leger.fetch({success: function(){
+        var legerView = new LegerView({collection: leger, el: follows});
+        legerView.render(that.model.get("id"));
+      }});
+      this.$el.show();
+    },
+    fetchUser: function(userId){
+      var that = this;
+      var user = new User({id: userId});
+      user.fetch({success: function(){
+        that.model = user;
+        that.render();
+      }});
     }
   });
 
@@ -26,6 +56,7 @@
     render: function(){
       var template = _.template($("#add_user_template").html(), {});
       this.$el.html(template); 
+      this.$el.show();
     },
     events: {
       "click button[type=submit]": "addUser"
@@ -42,23 +73,39 @@
   });
 
   var UserListView = Backbone.View.extend({
-    initialize: function(){
-      this.render();
+    initialize: function(options){
+      var that = this;
+      options.router.on('route:showUsers', function(){
+        that.fetchUsers();
+      });
+      options.router.on('route:showUser', function(userId){
+        $(that.el).hide();
+      });
+
     },
     render: function(){
       var that = this;
       this.collection.each(function(user){
         that.$el.append('<li><a href="#users/' + user.get("id") + '">' + user.get("firstname") + " " + user.get("lastname") + "</a></li>");
       });
+    },
+    fetchUsers: function(){
+      var that = this;
+      var users = new Users();
+      users.fetch({success: function(){
+        that.collection = users;
+        that.render();
+      }});
     }
   });
 
-  var Lege = Backbone.Model.extend({    
-  });
+  var Subscription = Backbone.Model.extend({});
 
-  var Leger = Backbone.Collection.extend({
-    model: Lege,
-    url: "/doctors"
+  var Subscriptions = Backbone.Collection.extend({
+    initialize: function(options){
+      this.url = "/users/" + options.userId + "/subscriptions";
+    },
+    model: Subscription
   });
 
   var LegeView = Backbone.View.extend({
@@ -66,40 +113,62 @@
       this.render();
     },
     render: function(){
-      var template = _.template($("#doctorlist_item_template").html());
-      this.$el.html(template(this.model.attributes));
+      var template = _.template($("#doctorlist_item_template").html(), this.model.attributes);
+      this.$el.append(template);
+      var submitButton = $("button", this.$el);
+      submitButton.attr("id", this.model.get("id")); 
+      if(this.model.attributes.followed){
+        submitButton.attr("class", "btn btn-danger");
+        submitButton.empty();
+        submitButton.append("Slutt å følge");
+      } else {
+        submitButton.attr("class", "btn btn-success");
+      }
     },
     events: {
-      "submit form": "toggleSubscribe"
+      "click .btn": "toggleSubscribe"
     },
     toggleSubscribe: function(event){
-      alert("HAHAHA");
-      console.log("toggling subscribe");
-      return false;
+      this.$el.trigger('toggled', this.model); 
     }
   });
 
   var LegerView = Backbone.View.extend({
     initialize: function() {
-      this.render();
     },
-    render: function(){
+    events: {
+      "toggled": "toggleSubscribe"
+    },
+    tagName: "table",
+    render: function(userId){
+      var that = this;
+      that.userId = userId;
       var template = _.template($("#doctors_template").html());
       this.$el.html(template);
       var tableBody = $("tbody", this.$el);
-      this.collection.each(function(lege){
-        var legeView = new LegeView({model: lege});
-        tableBody.append(legeView.$el.html());
-    });  
-    }
-  });
-
-  var Subscription = Backbone.Model.extend({});
-
-  var Subscriptions = Backbone.Collection.extend({
-    model: Subscription,
-    initialize: function(user){
-      this.url = "/users/" + user.userid + "/subscriptions"
+ 
+      that.subscriptions = new Subscriptions({userId: userId});
+      that.subscriptions.fetch({success: function(){
+        var followedDoctors = _.map(that.subscriptions.models, function(subscription) { return subscription.get("doctorid"); });
+        that.collection.each(function(lege){
+          var isFollowed = _.contains(followedDoctors, lege.id + "");
+          var subscription = _.find(that.subscriptions.models, function(subscription) { return subscription.get("doctorid") === (lege.id + ""); });
+          lege.set({followed: isFollowed});
+          lege.set({subscription: subscription});
+          var tableRow = $("<tr>").appendTo(tableBody);
+          var legeView = new LegeView({model: lege, el: tableRow});
+        });  
+      }});
+    },
+    toggleSubscribe: function(event, data){
+      var subscription = data.get("subscription");
+      console.log(_.contains(this.subscriptions, subscription));
+      if(subscription === undefined){
+        console.log(this.subscriptions);
+        console.log("Create new,..");
+      } else {
+        console.log("Delte subscription");
+      }
     }
   });
 
@@ -107,41 +176,15 @@
     routes: {
       "users": "showUsers",
       "users/:id": "showUser"
-    },
-    
-    showUsers: function(){
-      var userView = new AddUserView({el: $("#add_user")});
-      var users = new Users();
-      users.fetch({success: function(){
-        var userListView = new UserListView({el: $("#user_list"), collection: users});
-      }});
-    },
-    showUser: function(userId){
-      var leger = new Leger();
-/*      leger.fetch({success: function(){
-        var legerView = new LegerView({el: $("#leger"), collection: leger});
-      }});*/
-
-      var newUser = new User({id: userId});
-      newUser.fetch({success: function(){
-        console.log(newUser);
-        var userView = new UserView({el: $("#user"), model: newUser});
-      }});
     }
   });
 
   $(document).ready(function(){
     var legeRouter = new LegeRouter();
+
+    var userListView = new UserListView({el: $("#user_list"), router: legeRouter});
+    var userView = new UserView({el: $("#user"), router: legeRouter});
+
     Backbone.history.start();
-    legeRouter.navigate('#users');
-
-    var subscriptions = new Subscriptions({userid:"507c70950240e6280f000001"});
-
-    subscriptions.fetch({success: function(){
-      console.log("Fetching shit...");
-    }});
-
-//    subscriptions.create({userid:"507c70950240e6280f000001",doctorid:"123456"});
-
   });
 }());

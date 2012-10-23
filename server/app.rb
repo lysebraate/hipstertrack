@@ -58,10 +58,13 @@ post '/users/:id/subscriptions' do
   puts subscriptionData
 	user.subscriptions.build(subscriptionData)
   	user.save
- end
+end
 
 # get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 get '/doctors' do
-	$base_url = "lit-bayou-7664.herokuapp.com"
-	Net::HTTP.get($base_url, $kvinnerioslo_url)
+  content_type :json
+  f = File.open("doctors.json")
+  f.gets
+	#$base_url = "lit-bayou-7664.herokuapp.com"
+	#Net::HTTP.get($base_url, $kvinnerioslo_url)
 end
