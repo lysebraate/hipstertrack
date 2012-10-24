@@ -17,6 +17,19 @@
     url: "/doctors"
   });
 
+  var Subscription = Backbone.Model.extend({
+    initialize: function(options){
+      this.url = "/users/" + options.userid + "/subscriptions/" + options.doctorid;
+    },
+  });
+
+  var Subscriptions = Backbone.Collection.extend({
+    initialize: function(options){
+      this.url = "/users/" + options.userid + "/subscriptions";
+     },
+    model: Subscription
+  });
+
   var UserView = Backbone.View.extend({
     initialize: function(options){
       var that = this;
@@ -99,20 +112,6 @@
     }
   });
 
-  var Subscription = Backbone.Model.extend({
-    initialize: function(options){
-      this.url = "/users/" + options.userid + "/subscriptions/" + options.doctorid;
-      console.log("url", this.url);
-    },
-  });
-
-  var Subscriptions = Backbone.Collection.extend({
-    initialize: function(options){
-      this.url = "/users/" + options.userid + "/subscriptions";
-      console.log("url", this.url);
-     },
-    model: Subscription
-  });
 
   var LegeView = Backbone.View.extend({
     initialize: function(){
@@ -155,12 +154,10 @@
 
       that.subscriptions = new Subscriptions({userid: userId});
       that.subscriptions.fetch({success: function(){
-        console.log(that.subscriptions);
         var followedDoctors = _.map(that.subscriptions.models, function(subscription) { return subscription.get("doctorid"); });
         that.collection.each(function(lege){
           var isFollowed = _.contains(followedDoctors, lege.id + "");
           var subscription = _.find(that.subscriptions.models, function(subscription) { return subscription.get("doctorid") === (lege.id + ""); });
-          console.log(subscription);
           lege.set({followed: isFollowed});
           lege.set({subscription: subscription});
           var tableRow = $("<tr>").appendTo(tableBody);
@@ -176,7 +173,6 @@
         var newSubscription = new Subscription({userid: this.userId, doctorid: doctorId});
         newSubscription.save();
       } else {
-        console.log(subscription);
         subscription.destroy();
         //this.subscriptions.remove(subscription);
       }
