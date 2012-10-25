@@ -52,7 +52,7 @@ class App < Sinatra::Base
 
 	# get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 	get '/doctors' do
-		$base_url = "lit-bayou-7664.herokuapp.com"
+		$base_url = "byttfastlege.herokuapp.com"
 		Net::HTTP.get($base_url, $kvinnerioslo_url)
 	end
 
