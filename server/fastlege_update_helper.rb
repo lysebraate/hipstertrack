@@ -8,7 +8,7 @@ require_relative 'mongo_database'
 require_relative 'user'
 require_relative 'subscription'
 
-$base_url = "lit-bayou-7664.herokuapp.com"
+$base_url = "byttfastlege.herokuapp.com"
 $kvinnerioslo_url = "/fastleger/kvinnerioslo"
 
 class FastlegeUpdateHelper

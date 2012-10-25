@@ -11,12 +11,11 @@ require_relative 'subscription'
 require_relative 'mongo_database'
 require_relative 'fastlege_update_helper'
 
-
 MongoMapper.connection = Mongo::Connection.new('localhost',27017, :pool_size => 5)
 MongoMapper.database = 'fastlege'
 
 
-#class App < Sinatra::Base
+class App < Sinatra::Base
 
 	#static content
 	get "/" do
@@ -24,10 +23,9 @@ MongoMapper.database = 'fastlege'
 	end
 
 	# get a known user 
-	get '/users/:userid' do  
-    userid = params[:userid]
-		puts("getting user with id " + userid)
-		user = User.find_by_id(userid)
+	get '/users/:id' do  
+		puts("getting user with id " + params[:id])
+		user = User.find_by_id(params[:id])
 		user.to_json
 	end  
 
@@ -75,13 +73,35 @@ MongoMapper.database = 'fastlege'
     user.unsubscribe(doctor_id)
     user.save
   end
-	
+
+	# create a new user 
+	post '/users' do 
+		puts("creating user")
+		userdata = JSON.parse(request.body.read.to_s)  
+		newuser = User.new(userdata) 
+	  	newuser.save
+	end
+
+	# get all subscriptions for changes with doctor
+	get '/users/:id/subscriptions' do
+		puts("get subscriptions for user with id " + params[:id])
+		user = User.find_by_id(params[:id])
+		user.subscriptions.to_json
+	end
+
+	# create subscription for changes with doctor
+	post '/users/:id/subscriptions' do
+		puts("creating subscriptions for user with id " + params[:id])
+		user = User.find_by_id(params[:id])
+		subscriptionData = JSON.parse(request.body.read.to_s)  
+		user.subscriptions.build(subscriptionData)
+	  	user.save
+	 end
+
 	# get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 	get '/doctors' do
-	  content_type :json
-	  f = File.open("doctors.json")
-	  f.gets
-		#$base_url = "lit-bayou-7664.herokuapp.com"
-		#Net::HTTP.get($base_url, $kvinnerioslo_url)
+		$base_url = "byttfastlege.herokuapp.com"
+		Net::HTTP.get($base_url, $kvinnerioslo_url)
 	end
-#end
+
+end
