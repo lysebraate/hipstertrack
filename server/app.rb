@@ -15,7 +15,7 @@ class App < Sinatra::Base
 	# get a known user 
 	get '/users/:id' do  
 		puts("getting user with id " + params[:id])
-		{"email":"tto@knowit.no", "firstname":"tobias", "lastname":"tobias""id":"507b9fa146345823a4000001", "phonenumber":"98257822"}
+		'{"email":"tto@knowit.no", "firstname":"tobias", "lastname":"tobias""id":"1", "phonenumber":"98257822"}'
 	end  
 
 	# get all users
