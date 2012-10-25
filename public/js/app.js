@@ -17,37 +17,26 @@
     url: "/doctors"
   });
 
-  var Subscription = Backbone.Model.extend({
-    initialize: function(options){
-      this.url = "/users/" + options.userid + "/subscriptions/" + options.doctorid;
-    },
-  });
-
-  var Subscriptions = Backbone.Collection.extend({
-    initialize: function(options){
-      this.url = "/users/" + options.userid + "/subscriptions";
-     },
-    model: Subscription
-  });
-
   var UserView = Backbone.View.extend({
     initialize: function(options){
       var that = this;
-	    options.router.on('route:showUser', function(userId) {
+      options.router.on('route:showUser', function(userId) {
         that.fetchUser(userId);
-	    });
+      });
       options.router.on('route:showUsers', function(){
         $(that.el).hide();
       });
     },
     render: function(){
+      var that = this;
       var template = _.template($("#user_template").html(), this.model.attributes);
       this.$el.append(template);
-
       var follows = $("#follows", this.$el);
-      var userId = this.model.get("id");
-      var legerView = new LegerView({el: follows, userId: userId});
-
+      var leger = new Leger();
+      leger.fetch({success: function(){
+        var legerView = new LegerView({collection: leger, el: follows});
+        legerView.render(that.model.get("id"));
+      }});
       this.$el.show();
     },
     fetchUser: function(userId){
@@ -65,8 +54,8 @@
       this.render();
     },
     render: function(){
-      var template = _.template($("#add_user_template").html());
-      this.$el.append(template); 
+      var template = _.template($("#add_user_template").html(), {});
+      this.$el.html(template); 
       this.$el.show();
     },
     events: {
@@ -83,31 +72,46 @@
     }
   });
 
-  var UserListItem = Backbone.View.extend({
-    initialize: function(){
-      this.$el.append('<li><a href="#users/' + this.model.get("id") + '">' + this.model.get("firstname") + " " + this.model.get("lastname") + "</a></li>");
-    }
-  });
-
   var UserListView = Backbone.View.extend({
     initialize: function(options){
       var that = this;
       options.router.on('route:showUsers', function(){
-        that.render();
+        that.fetchUsers();
       });
       options.router.on('route:showUser', function(userId){
         $(that.el).hide();
       });
-      users.fetch({success: function(){
-        that.collection = users;
-      }});
+
     },
     render: function(){
       var that = this;
       this.collection.each(function(user){
-        new UserListItem({el: that.$el, model: user});
+        that.$el.append('<li><a href="#users/' + user.get("id") + '">' + user.get("firstname") + " " + user.get("lastname") + "</a></li>");
       });
+    },
+    fetchUsers: function(){
+      var that = this;
+      var users = new Users();
+      users.fetch({success: function(){
+        that.collection = users;
+        that.render();
+      }});
     }
+  });
+
+  var Subscription = Backbone.Model.extend({
+    initialize: function(options){
+      this.url = "/users/" + options.userid + "/subscriptions/" + options.doctorid;
+      console.log("url", this.url);
+    },
+  });
+
+  var Subscriptions = Backbone.Collection.extend({
+    initialize: function(options){
+      this.url = "/users/" + options.userid + "/subscriptions";
+      console.log("url", this.url);
+     },
+    model: Subscription
   });
 
   var LegeView = Backbone.View.extend({
@@ -136,32 +140,27 @@
   });
 
   var LegerView = Backbone.View.extend({
-    initialize: function(options) {
-      var that = this;
-      this.userId = options.userId;
-      var leger = new Leger();
-      leger.fetch({success: function(){
-        that.collection = leger; 
-        that.render();
-      }});
+    initialize: function() {
     },
     events: {
       "toggled": "toggleSubscribe"
     },
     tagName: "table",
-    render: function(){
+    render: function(userId){
       var that = this;
+      that.userId = userId;
       var template = _.template($("#doctors_template").html());
-      this.$el.append(template);
-
+      this.$el.html(template);
       var tableBody = $("tbody", this.$el);
 
-      that.subscriptions = new Subscriptions({userid: that.userId});
+      that.subscriptions = new Subscriptions({userid: userId});
       that.subscriptions.fetch({success: function(){
+        console.log(that.subscriptions);
         var followedDoctors = _.map(that.subscriptions.models, function(subscription) { return subscription.get("doctorid"); });
         that.collection.each(function(lege){
           var isFollowed = _.contains(followedDoctors, lege.id + "");
           var subscription = _.find(that.subscriptions.models, function(subscription) { return subscription.get("doctorid") === (lege.id + ""); });
+          console.log(subscription);
           lege.set({followed: isFollowed});
           lege.set({subscription: subscription});
           var tableRow = $("<tr>").appendTo(tableBody);
@@ -177,7 +176,9 @@
         var newSubscription = new Subscription({userid: this.userId, doctorid: doctorId});
         newSubscription.save();
       } else {
+        console.log(subscription);
         subscription.destroy();
+        //this.subscriptions.remove(subscription);
       }
       that.render(that.userId);
 
@@ -187,9 +188,6 @@
 
   var LegeRouter = Backbone.Router.extend({
     routes: {
-      "#": function(){
-        
-      },
       "users": "showUsers",
       "users/:id": "showUser"
     }
