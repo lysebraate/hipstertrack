@@ -74,30 +74,6 @@ class App < Sinatra::Base
     user.save
   end
 
-	# create a new user 
-	post '/users' do 
-		puts("creating user")
-		userdata = JSON.parse(request.body.read.to_s)  
-		newuser = User.new(userdata) 
-	  	newuser.save
-	end
-
-	# get all subscriptions for changes with doctor
-	get '/users/:id/subscriptions' do
-		puts("get subscriptions for user with id " + params[:id])
-		user = User.find_by_id(params[:id])
-		user.subscriptions.to_json
-	end
-
-	# create subscription for changes with doctor
-	post '/users/:id/subscriptions' do
-		puts("creating subscriptions for user with id " + params[:id])
-		user = User.find_by_id(params[:id])
-		subscriptionData = JSON.parse(request.body.read.to_s)  
-		user.subscriptions.build(subscriptionData)
-	  	user.save
-	 end
-
 	# get doctors in Oslo. Remote call to fastlegetjeneste by JHG
 	get '/doctors' do
 		$base_url = "byttfastlege.herokuapp.com"

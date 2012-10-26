@@ -32,7 +32,6 @@ class User
     
   def subscribe doctor_id
     new_subscription = Subscription.new(:doctorid => doctor_id, :userid => self.id)
-    puts self.id
     subscriptions.push(new_subscription)
   end
 end
